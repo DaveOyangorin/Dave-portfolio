@@ -87,4 +87,4 @@ export const ProjectDetails = ({ project }: ProjectDetailsProps) => {
       </Link>
     </section>
   )
-}s
+}
