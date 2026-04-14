@@ -1,9 +1,6 @@
 import { ProjectDetails } from '@/app/components/pages/project/project-details'
 import { ProjectSections } from '@/app/components/pages/project/project-sections'
-import {
-  ProjectPageData,
-  ProjectsPageStaticData
-} from '@/app/types/page-info'
+import { ProjectPageData, ProjectsPageStaticData } from '@/app/types/page-info'
 import { fetchHygraphQuery } from '@/app/utils/fetch-hygraph-query'
 import { Metadata } from 'next'
 
@@ -13,13 +10,10 @@ type ProjectProps = {
   }
 }
 
-// ✅ SAFE FETCH FUNCTION
-const getProjectDetails = async (
-  slug: string
-): Promise<ProjectPageData | null> => {
+const getProjectDetails = async (slug: string): Promise<ProjectPageData> => {
   const query = `
-    query ProjectQuery {
-      project(where: { slug: "${slug}" }) {
+    query ProjectQuery() {
+      project(where: {slug: "${slug}"}) {
         pageThumbnail {
           url
         }
@@ -47,112 +41,55 @@ const getProjectDetails = async (
     }
   `
 
-  try {
-    const data = await fetchHygraphQuery<ProjectPageData>(query, 150)
-
-    if (!data?.project) return null
-
-    // Normalize data to prevent runtime crashes
-    return {
-      project: {
-        ...data.project,
-        title: data.project.title ?? '',
-        shortDescription: data.project.shortDescription ?? '',
-        description: {
-          raw: data.project.description?.raw ?? null,
-          text: data.project.description?.text ?? ''
-        },
-        thumbnail: {
-          url: data.project.thumbnail?.url ?? ''
-        },
-        pageThumbnail: {
-          url: data.project.pageThumbnail?.url ?? ''
-        },
-        sections: data.project.sections ?? [],
-        technologies: data.project.technologies ?? [],
-        liveProjectUrl: data.project.liveProjectUrl ?? '',
-        githubUrl: data.project.githubUrl ?? ''
-      }
-    }
-  } catch (error) {
-    console.error('Error fetching project:', error)
-    return null
-  }
+  return fetchHygraphQuery(query, 150)
 }
 
-// ✅ PAGE COMPONENT
-export default async function Project({ params }: ProjectProps) {
-  const data = await getProjectDetails(params.slug)
+export default async function Project({ params: { slug } }: ProjectProps) {
+  const { project } = await getProjectDetails(slug)
 
-  if (!data?.project) {
-    return <div>Project not found</div>
+  if (!project) {
+    return null;
   }
-
-  const { project } = data
 
   return (
     <>
       <ProjectDetails project={project} />
-      <ProjectSections sections={project.sections ?? []} />
+      <ProjectSections sections={project.sections} />
     </>
   )
 }
 
-// ✅ STATIC PARAMS (SAFE)
 export async function generateStaticParams() {
   const query = `
-    query ProjectsSlugsQuery {
+    query ProjectsSlugsQuery() {
       projects(first: 100) {
         slug
       }
     }
   `
 
-  try {
-    const data =
-      await fetchHygraphQuery<ProjectsPageStaticData>(query)
+  const { projects } = await fetchHygraphQuery<ProjectsPageStaticData>(query)
 
-    if (!data?.projects) return []
-
-    return data.projects
-      .filter((p) => p?.slug)
-      .map((project) => ({
-        slug: project.slug
-      }))
-  } catch (error) {
-    console.error('Error fetching slugs:', error)
-    return []
-  }
+  return projects
 }
 
-// ✅ METADATA (FULLY SAFE)
 export async function generateMetadata({
-  params
+  params: { slug }
 }: ProjectProps): Promise<Metadata> {
-  const data = await getProjectDetails(params.slug)
-
-  const project = data?.project
-
-  if (!project) {
-    return {
-      title: 'Project not found',
-      description: 'This project does not exist'
-    }
-  }
+  const data = await getProjectDetails(slug)
+  const project = data.project
 
   return {
-    title: project.title ?? 'Project',
-    description: project.description?.text ?? '',
+    title: project.title,
+    description: project.description.text,
     openGraph: {
-      images: project.thumbnail?.url
-        ? [
-            {
-              url: project.thumbnail.url,
-              width: 1200,
-              height: 630
-            }
-          ]
-        : []
+      images: [
+        {
+          url: project.thumbnail.url,
+          width: 1200,
+          height: 630
+        }
+      ]
     }
   }
 }
