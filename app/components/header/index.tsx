@@ -41,12 +41,7 @@ export const Header = () => {
     >
       <div className='container flex items-center justify-between'>
         <Link href='/'>
-          <Image
-            width={100}
-            height={100}
-            src='/images/KGG.png'
-            alt='Logo Gaurav Govinda'
-          />
+          
         </Link>
 
         {/* Hamburger Menu Button */}
