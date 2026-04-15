@@ -10,36 +10,36 @@ import './globals.css'
 
 export const metadata = {
   title: {
-    default: 'KGG',
-    template: '%s | KGG',
+    default: 'Dave',
+    template: 'Oyangorin',
   },
   authors: [
-    { name: 'Kumar Gaurav Govinda', url: 'https://www.linkedin.com/in/krgauravgovinda/' },
+    { name: 'Dave Oyangorin', url: 'https://www.linkedin.com/in/dave-oyangorin-5727712b0/' },
   ],
-  creator: 'Kumar Gaurav Govinda',
+  creator: 'Dave Oyangorin',
   // icons: { icon: '' },
   openGraph: {
-    title: 'KGG',
+    title: 'Dave Oyangorin',
     description:
-      'Kumar Gaurav Govinda DEV, website and web application development.',
+      'Dave Oyangorin, website and web application development.',
     type: 'website',
     locale: 'en_US',
-    url: 'https://gauravgovinda.vercel.app',
+    url: 'https://dave-portfolio-phi.vercel.app/',
   },
-  applicationName: 'KGG',
+  applicationName: 'Dave Oyangorin',
   description:
-    'Kumar Gaurav Govinda DEV, website and web application development.',
+    'Dave Oyangorin, website and web application development.',
   category: 'Web Development',
   keywords:
     'Web Development, Website Development, Application Development, Web Application Development, Website Development, Website Development in Ranchi, Application Development in Ranchi, Web Application Development in Ranchi, Website Development in Ranchi, Website Development in India, Application Development in India, Web Application Development in India, Web Site Development in India, Website Development in Ranchi India, Application Development in Ranchi India, Web Application Development in Ranchi India, Website Development in Ranchi India, Website Development in India, Application Development in India, Web Application Development in India, Website Development in India, Website Development in Ranchi India, Application Development in Ranchi India, Web Application Development in Ranchi India, Web Site Development in Ranchi India',
   classification: 'Web Development',
   robots: 'index, follow',
-  publisher: 'KGG',
+  publisher: 'Dave Oyangorin',
   referrer: 'no-referrer-when-downgrade',
   alternates: {
-    canonical: 'https://gauravgovinda.vercel.app',
+    canonical: 'https://dave-portfolio-phi.vercel.app/',
     languages: {
-      'en-US': 'https://gauravgovinda.vercel.app',
+      'en-US': 'https://dave-portfolio-phi.vercel.app/',
     },
   },
 }
