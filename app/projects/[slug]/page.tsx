@@ -10,21 +10,16 @@ type ProjectProps = {
   }
 }
 
-const getProjectDetails = async (slug: string): Promise<ProjectPageData> => {
+// ✅ SAFE query using variables
+const getProjectDetails = async (slug: string): Promise<ProjectPageData | null> => {
   const query = `
-    query ProjectQuery() {
-      project(where: {slug: "${slug}"}) {
-        pageThumbnail {
-          url
-        }
-        thumbnail {
-          url
-        }
+    query ProjectQuery($slug: String!) {
+      project(where: { slug: $slug }) {
+        pageThumbnail { url }
+        thumbnail { url }
         sections {
           title
-          image {
-            url
-          }
+          image { url }
         }
         title
         shortDescription
@@ -41,15 +36,29 @@ const getProjectDetails = async (slug: string): Promise<ProjectPageData> => {
     }
   `
 
-  return fetchHygraphQuery(query, 150)
+  try {
+    const data = await fetchHygraphQuery<ProjectPageData>(
+      query,
+      150,
+      { slug }
+    )
+
+    return data?.project ? data : null
+  } catch (error) {
+    console.error('Project fetch error:', error)
+    return null
+  }
 }
 
+// ✅ PAGE
 export default async function Project({ params: { slug } }: ProjectProps) {
-  const { project } = await getProjectDetails(slug)
+  const data = await getProjectDetails(slug)
 
-  if (!project) {
-    return null;
+  if (!data?.project) {
+    return <div>Project not found</div>
   }
+
+  const { project } = data
 
   return (
     <>
@@ -59,37 +68,58 @@ export default async function Project({ params: { slug } }: ProjectProps) {
   )
 }
 
+// ✅ STATIC PARAMS (FIXED)
 export async function generateStaticParams() {
   const query = `
-    query ProjectsSlugsQuery() {
+    query ProjectsSlugsQuery {
       projects(first: 100) {
         slug
       }
     }
   `
 
-  const { projects } = await fetchHygraphQuery<ProjectsPageStaticData>(query)
+  try {
+    const data = await fetchHygraphQuery<ProjectsPageStaticData>(query)
 
-  return projects
+    if (!data?.projects) return []
+
+    return data.projects.map((project) => ({
+      slug: project.slug,
+    }))
+  } catch (error) {
+    console.error('Static params error:', error)
+    return []
+  }
 }
 
+// ✅ METADATA (SAFE)
 export async function generateMetadata({
   params: { slug }
 }: ProjectProps): Promise<Metadata> {
   const data = await getProjectDetails(slug)
+
+  if (!data?.project) {
+    return {
+      title: 'Project not found',
+      description: 'No project data available',
+    }
+  }
+
   const project = data.project
 
   return {
     title: project.title,
-    description: project.description.text,
+    description: project.description?.text || '',
     openGraph: {
-      images: [
-        {
-          url: project.thumbnail.url,
-          width: 1200,
-          height: 630
-        }
-      ]
-    }
+      images: project.thumbnail?.url
+        ? [
+            {
+              url: project.thumbnail.url,
+              width: 1200,
+              height: 630,
+            },
+          ]
+        : [],
+    },
   }
 }
