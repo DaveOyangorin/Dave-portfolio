@@ -20,6 +20,19 @@ export const HeroSection = ({ homeInfo }: HeroSectionProps) => {
     }
   }
 
+  const handleCV = () => {
+    // Google Drive direct download link
+    const cvLink = 'https://drive.google.com/uc?export=download&id=1P8Wx-3oJ8qP-ovkojNJJ2mqLJJ7ZGOyK'
+    
+    // Programmatically trigger download
+    const link = document.createElement('a')
+    link.href = cvLink
+    link.setAttribute('download', 'Dave_Oyangorin_CV.pdf')
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
   return (
     <section className='w-full lg:h-[755px] bg-hero-image bg-cover bg-center bg-no-repeat flex flex-col justify-end pb-10 sm:pb-32 py-32 lg:pb-[110px]'>
       <div className='container flex items-start justify-between flex-col-reverse lg:flex-row'>
@@ -40,6 +53,10 @@ export const HeroSection = ({ homeInfo }: HeroSectionProps) => {
               Contact
               <HiArrowNarrowRight size={18} />
             </Button>
+            <Button onClick={handleCV} className='w-max shadow-button'>
+              Download CV
+              <HiArrowNarrowRight size={18} />
+            </Button>
             <div className='text-gray-600 text-2xl flex items-center h-20 gap-3'>
               {homeInfo?.socials.map((contact, index) => (
                 <a
@@ -52,6 +69,7 @@ export const HeroSection = ({ homeInfo }: HeroSectionProps) => {
                 </a>
               ))}
             </div>
+            
           </div>
         </motion.div>
         <motion.div
