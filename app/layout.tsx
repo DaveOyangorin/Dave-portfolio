@@ -42,6 +42,9 @@ export const metadata = {
       'en-US': 'https://dave-portfolio-phi.vercel.app/',
     },
   },
+  verification: {
+    google: 'xmKwJUnShVWb9SUSJH_i0JOrk8IM2VHVJpyUIYeN_sU',
+  },
 }
 
 const inter = Inter({
